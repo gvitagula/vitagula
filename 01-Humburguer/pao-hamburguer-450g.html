@@ -1,0 +1,132 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pão Hambúrguer 450g - Vita Gula</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .header {
+            background-color: #343a40;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn-custom {
+            margin: 5px;
+            min-width: 150px;
+            background-color: #004085;
+            border: none;
+            border-radius: 10px;
+            color: #ffffff;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .btn-custom:hover {
+            background-color: #00c4ff;
+            color: #000000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .btn-selected {
+            background-color: #00c4ff;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 196, 255, 0.7), 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .btn-selected:hover {
+            background-color: #00c4ff;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 196, 255, 0.9), 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Vita Gula - Pão Hambúrguer 450g</h1>
+        <h3>Março 2025</h3>
+    </div>
+    <div class="container text-center">
+        <div class="row">
+            <div class="col">
+                <h4>Menu</h4>
+                <a href="index.html" class="btn btn-custom">Principal</a><br>
+                <a href="pao-hamburguer-450g.html" class="btn btn-custom btn-selected">Pão Hambúrguer 450g</a>
+                <a href="pao-hot-dog-400g.html" class="btn btn-custom">Pão Hot Dog 400g</a>
+                <a href="pao-de-forma-450g.html" class="btn btn-custom">Pão de Forma 450g</a>
+                <a href="pao-de-leite-400g.html" class="btn btn-custom">Pão de Leite 400g</a>
+                <a href="pao-de-forma-integral-450g.html" class="btn btn-custom">Pão de Forma Integral 450g</a>
+                <a href="hamburgao-650g.html" class="btn btn-custom">Hambúrgão 650g</a>
+                <a href="pao-pic-nic-450g.html" class="btn btn-custom">Pão Pic Nic 450g</a>
+                <a href="pic-nic-integral-450g.html" class="btn btn-custom">Pic Nic Integral 450g</a>
+                <a href="pao-hamburguer-brioche-285g.html" class="btn btn-custom">Pão Hambúrguer Brioche 285g</a>
+                <a href="mini-hamburguer-brioche-220g.html" class="btn btn-custom">Mini Hambúrguer Brioche 220g</a>
+                <a href="pao-briochinho-340g.html" class="btn btn-custom">Pão Briochinho 340g</a>
+                <a href="pao-de-forma-brioche-330g.html" class="btn btn-custom">Pão de Forma Brioche 330g</a>
+                <a href="pao-arabe.html" class="btn btn-custom">Pão Árabe</a>
+                <a href="champanhe-200g.html" class="btn btn-custom">Champanhe 200g</a>
+                <a href=" Champanhe-250g.html" class="btn btn-custom">Champanhe 250g</a>
+                <a href="cappuccino-250g.html" class="btn btn-custom">Cappuccino 250g</a>
+                <a href="bola-de-ouro-250g.html" class="btn btn-custom">Bola de Ouro 250g</a>
+                <a href="leite-condensado-coco.html" class="btn btn-custom">Leite Condensado c/ Coco</a>
+                <a href="pizza-350g.html" class="btn btn-custom">Pizza 350g</a>
+                <a href="bolinho-330g.html" class="btn btn-custom">Bolinho 330g</a>
+                <a href="bolo-sabor-fogo-500g.html" class="btn btn-custom">Bolo Sabor Fogo 500g</a>
+                <a href="bolo-ingles-360g.html" class="btn btn-custom">Bolo Inglês 360g</a>
+                <a href="bolo-prestigio.html" class="btn btn-custom">Bolo Prestígio</a>
+                <a href="bolo-sabor-fofog.html" class="btn btn-custom">Bolo Sabor Fofog</a>
+                <a href="bolo-mole.html" class="btn btn-custom">Bolo Mole</a>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <h2>Detalhes de Produção - Pão Hambúrguer 450g</h2>
+                <p>Aguardando cálculos de produção...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
