@@ -1,0 +1,521 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produção de Hambúrguer - Vita Gula</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .header {
+            background-color: #343a40;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn-custom {
+            margin: 5px;
+            min-width: 150px;
+            background-color: #004085;
+            border: none;
+            border-radius: 10px;
+            color: #ffffff;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .btn-custom:hover {
+            background-color: #00c4ff;
+            color: #000000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .btn-selected {
+            background-color: #00c4ff;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 196, 255, 0.7), 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .btn-selected:hover {
+            background-color: #00c4ff;
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 196, 255, 0.9), 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .save-btn {
+            background-color: #28a745;
+            color: white;
+            margin-top: 20px;
+        }
+        .save-btn:hover {
+            background-color: #218838;
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+        }
+        .tab-content {
+            padding: 20px;
+        }
+        .day-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .day-table th, .day-table td {
+            text-align: center;
+        }
+        .ingredient-row {
+            background-color: #f0f0f0;
+        }
+        .product-price-section {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Produção de Hambúrguer - Vita Gula</h1>
+        <div class="mb-3">
+            <label for="yearInput" class="form-label">Ano:</label>
+            <input type="number" id="yearInput" class="form-control" value="2025" min="2025">
+        </div>
+        <ul class="nav nav-tabs" id="monthTabs">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#january">Janeiro</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#february">Fevereiro</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#march">Março</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#april">Abril</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#may">Maio</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#june">Junho</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#july">Julho</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#august">Agosto</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#september">Setembro</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#october">Outubro</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#november">Novembro</a></li>
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#december">Dezembro</a></li>
+        </ul>
+        <div class="tab-content" id="monthTabContent">
+            <div class="tab-pane fade show active" id="january">
+                <h2>Janeiro</h2>
+                <ul class="nav nav-tabs" id="dayTabsJanuary"></ul>
+                <div class="tab-content" id="dayTabContentJanuary"></div>
+            </div>
+            <div class="tab-pane fade" id="february">
+                <h2>Fevereiro</h2>
+                <ul class="nav nav-tabs" id="dayTabsFebruary"></ul>
+                <div class="tab-content" id="dayTabContentFebruary"></div>
+            </div>
+            <div class="tab-pane fade" id="march">
+                <h2>Março</h2>
+                <ul class="nav nav-tabs" id="dayTabsMarch"></ul>
+                <div class="tab-content" id="dayTabContentMarch"></div>
+            </div>
+            <div class="tab-pane fade" id="april">
+                <h2>Abril</h2>
+                <ul class="nav nav-tabs" id="dayTabsApril"></ul>
+                <div class="tab-content" id="dayTabContentApril"></div>
+            </div>
+            <div class="tab-pane fade" id="may">
+                <h2>Maio</h2>
+                <ul class="nav nav-tabs" id="dayTabsMay"></ul>
+                <div class="tab-content" id="dayTabContentMay"></div>
+            </div>
+            <div class="tab-pane fade" id="june">
+                <h2>Junho</h2>
+                <ul class="nav nav-tabs" id="dayTabsJune"></ul>
+                <div class="tab-content" id="dayTabContentJune"></div>
+            </div>
+            <div class="tab-pane fade" id="july">
+                <h2>Julho</h2>
+                <ul class="nav nav-tabs" id="dayTabsJuly"></ul>
+                <div class="tab-content" id="dayTabContentJuly"></div>
+            </div>
+            <div class="tab-pane fade" id="august">
+                <h2>Agosto</h2>
+                <ul class="nav nav-tabs" id="dayTabsAugust"></ul>
+                <div class="tab-content" id="dayTabContentAugust"></div>
+            </div>
+            <div class="tab-pane fade" id="september">
+                <h2>Setembro</h2>
+                <ul class="nav nav-tabs" id="dayTabsSeptember"></ul>
+                <div class="tab-content" id="dayTabContentSeptember"></div>
+            </div>
+            <div class="tab-pane fade" id="october">
+                <h2>Outubro</h2>
+                <ul class="nav nav-tabs" id="dayTabsOctober"></ul>
+                <div class="tab-content" id="dayTabContentOctober"></div>
+            </div>
+            <div class="tab-pane fade" id="november">
+                <h2>Novembro</h2>
+                <ul class="nav nav-tabs" id="dayTabsNovember"></ul>
+                <div class="tab-content" id="dayTabContentNovember"></div>
+            </div>
+            <div class="tab-pane fade" id="december">
+                <h2>Dezembro</h2>
+                <ul class="nav nav-tabs" id="dayTabsDecember"></ul>
+                <div class="tab-content" id="dayTabContentDecember"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container text-center">
+        <div class="row">
+            <div class="col">
+                <h4>Menu</h4>
+                <a href="../index.html" class="btn btn-custom">Principal</a><br>
+                <a href="pao-hamburguer-450g.html" class="btn btn-custom btn-selected">Hambúrguer</a>
+                <a href="../02-Hotdog/pao-hot-dog-400g.html" class="btn btn-custom">HotDog</a>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <h2>Detalhes de Produção - Hambúrguer</h2>
+                <div class="product-price-section">
+                    <h4>Preço do Produto</h4>
+                    <label for="productName">Nome do Produto:</label>
+                    <input type="text" id="productName" class="form-control" value="Açúcar"><br>
+                    <label for="productPrice">Preço por kg (R$):</label>
+                    <input type="number" id="productPrice" class="form-control" value="170"><br>
+                    <label for="productQuantity">Quantidade (kg):</label>
+                    <input type="number" id="productQuantity" class="form-control" value="1"><br>
+                    <label for="totalValue">Valor Total (R$):</label>
+                    <input type="number" id="totalValue" class="form-control" readonly>
+                </div>
+                <div class="table-container">
+                    <table class="table table-bordered day-table" id="productionTable">
+                        <thead>
+                            <tr>
+                                <th>Ingrediente</th>
+                                <th>Quantidade</th>
+                                <th>Unidade</th>
+                                <th>Preço Unitário (R$)</th>
+                                <th>Valor Total (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Farinha</td>
+                                <td><input type="number" class="form-control" id="farinha-january-1" value="50" onchange="calculateIngredients('january', 1)"></td>
+                                <td>kg</td>
+                                <td id="farinha-price-january-1">2.5</td>
+                                <td id="farinha-total-january-1">125</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn save-btn" onclick="saveData()">Salvar Dados</button>
+            </div>
+        </div>
+    </div>
+    <audio id="hoverSound" src="../aud/sobre_botao.mp3"></audio>
+    <audio id="clickSound" src="../aud/click.mp3"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const monthNames = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ];
+        const ingredients = {
+            "Açúcar": { factor: 6.5, unit: "kg" },
+            "ADPAST AUTO": { factor: 0.22, unit: "kg" },
+            "MELHORADOR PÓ 1Kg": { factor: 0.5, unit: "kg" },
+            "SAL": { factor: 0.9, unit: "kg" },
+            "MARGARINA": { factor: 1, unit: "kg" },
+            "ANTIMOFO PROFINA": { factor: 0.3, unit: "kg" },
+            "ÓLEO SOYA": { factor: 0.3, unit: "L" },
+            "F. BIOLÓGICO MANUAL": { factor: 0, unit: "kg", manual: true },
+            "ENZIMA-AMACIANTE": { factor: 0.1, unit: "kg" },
+            "ÁGUA": { factor: 24.5, unit: "L" },
+            "ÓLEO ZARPAN Liq": { factor: 0.07, unit: "L" }
+        };
+        let prices = {
+            "Açúcar": 170,
+            "ADPAST AUTO": 10,
+            "MELHORADOR PÓ 1Kg": 15,
+            "SAL": 1,
+            "MARGARINA": 5,
+            "ANTIMOFO PROFINA": 20,
+            "ÓLEO SOYA": 3,
+            "F. BIOLÓGICO MANUAL": 8,
+            "ENZIMA-AMACIANTE": 25,
+            "ÁGUA": 0.5,
+            "ÓLEO ZARPAN Liq": 4
+        };
+
+        // Gerar abas de meses
+        function generateMonthTabs() {
+            const monthTabs = document.getElementById('monthTabs');
+            monthNames.forEach((monthName, index) => {
+                const monthId = monthName.toLowerCase();
+                const li = document.createElement('li');
+                li.className = 'nav-item';
+                const a = document.createElement('a');
+                a.className = index === 0 ? 'nav-link active' : 'nav-link';
+                a.setAttribute('data-bs-toggle', 'tab');
+                a.href = `#${monthId}`;
+                a.textContent = monthName;
+                li.appendChild(a);
+                monthTabs.appendChild(li);
+
+                const div = document.createElement('div');
+                div.className = index === 0 ? 'tab-pane fade show active' : 'tab-pane fade';
+                div.id = monthId;
+                div.innerHTML = `
+                    <h2>${monthName}</h2>
+                    <ul class="nav nav-tabs" id="dayTabs${monthName}"></ul>
+                    <div class="tab-content" id="dayTabContent${monthName}"></div>
+                `;
+                document.getElementById('monthTabContent').appendChild(div);
+            });
+        }
+
+        // Gerar abas de dias para cada mês
+        function generateDayTabs() {
+            monthNames.forEach((monthName, monthIndex) => {
+                const year = document.getElementById('yearInput').value;
+                const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+                const dayTabs = document.getElementById(`dayTabs${monthName}`);
+                const dayTabContent = document.getElementById(`dayTabContent${monthName}`);
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayId = `${monthName.toLowerCase()}-day-${day}`;
+                    const li = document.createElement('li');
+                    li.className = 'nav-item';
+                    const a = document.createElement('a');
+                    a.className = day === 1 ? 'nav-link active' : 'nav-link';
+                    a.setAttribute('data-bs-toggle', 'tab');
+                    a.href = `#${dayId}`;
+                    a.textContent = `Dia ${day}`;
+                    li.appendChild(a);
+                    dayTabs.appendChild(li);
+
+                    const div = document.createElement('div');
+                    div.className = day === 1 ? 'tab-pane fade show active' : 'tab-pane fade';
+                    div.id = dayId;
+                    div.innerHTML = `
+                        <h3>Dia ${day}</h3>
+                        <table class="table table-bordered day-table">
+                            <thead>
+                                <tr>
+                                    <th>Ingrediente</th>
+                                    <th>Quantidade</th>
+                                    <th>Unidade</th>
+                                    <th>Preço Unitário (R$)</th>
+                                    <th>Valor Total (R$)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Farinha</td>
+                                    <td><input type="number" class="form-control" id="farinha-${monthName.toLowerCase()}-${day}" value="50" onchange="calculateIngredients('${monthName.toLowerCase()}', ${day})"></td>
+                                    <td>kg</td>
+                                    <td id="farinha-price-${monthName.toLowerCase()}-${day}">2.5</td>
+                                    <td id="farinha-total-${monthName.toLowerCase()}-${day}">125</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    `;
+                    dayTabContent.appendChild(div);
+                }
+            });
+        }
+
+        // Calcular ingredientes com base na farinha
+        function calculateIngredients(month, day) {
+            const farinhaInput = document.getElementById(`farinha-${month}-${day}`);
+            const farinha = parseFloat(farinhaInput.value) || 0;
+            const baseFarinha = 50;
+
+            Object.keys(ingredients).forEach(ingredient => {
+                const factor = ingredients[ingredient].factor;
+                const unit = ingredients[ingredient].unit;
+                let quantity = 0;
+
+                if (ingredients[ingredient].manual) {
+                    quantity = 0;
+                } else {
+                    quantity = (farinha / baseFarinha) * factor;
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'ingredient-row';
+                row.innerHTML = `
+                    <td>${ingredient}</td>
+                    <td>${quantity.toFixed(2)}</td>
+                    <td>${unit}</td>
+                    <td>${prices[ingredient] || 0}</td>
+                    <td>${(quantity * (prices[ingredient] || 0)).toFixed(2)}</td>
+                `;
+                const tbody = farinhaInput.closest('tbody');
+                const existingRow = tbody.querySelector(`tr[data-ingredient="${ingredient}"]`);
+                if (existingRow) {
+                    existingRow.replaceWith(row);
+                } else {
+                    tbody.appendChild(row);
+                }
+            });
+
+            updateTotals(month, day);
+        }
+
+        // Atualizar totais
+        function updateTotals(month, day) {
+            const tbody = document.getElementById('productionTable').querySelector('tbody');
+            let totalValue = 0;
+            tbody.querySelectorAll('tr').forEach(row => {
+                const valueCell = row.cells[4];
+                totalValue += parseFloat(valueCell.textContent) || 0;
+            });
+            document.getElementById(`farinha-total-${month}-${day}`).textContent = totalValue.toFixed(2);
+        }
+
+        // Calcular valor total do produto
+        function calculateTotalValue() {
+            const productPrice = parseFloat(document.getElementById('productPrice').value) || 0;
+            const productQuantity = parseFloat(document.getElementById('productQuantity').value) || 0;
+            const totalValue = productPrice * productQuantity;
+            document.getElementById('totalValue').value = totalValue.toFixed(2);
+        }
+
+        // Salvar dados
+        function saveData() {
+            const year = document.getElementById('yearInput').value;
+            const data = {};
+            monthNames.forEach((monthName, monthIndex) => {
+                const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+                data[monthName] = {};
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const farinhaInput = document.getElementById(`farinha-${monthName.toLowerCase()}-${day}`);
+                    if (farinhaInput) {
+                        data[monthName][day] = {
+                            farinha: parseFloat(farinhaInput.value) || 0
+                        };
+                    }
+                }
+            });
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `producao-hamburguer-${year}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('Dados salvos com sucesso!');
+        }
+
+        // Carregar dados do JSON
+        function loadData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    Object.keys(data).forEach(month => {
+                        const monthIndex = monthNames.indexOf(month);
+                        if (monthIndex !== -1) {
+                            Object.keys(data[month]).forEach(day => {
+                                const farinhaInput = document.getElementById(`farinha-${month.toLowerCase()}-${day}`);
+                                if (farinhaInput) {
+                                    farinhaInput.value = data[month][day].farinha;
+                                    calculateIngredients(month.toLowerCase(), day);
+                                }
+                            });
+                        }
+                    });
+                    alert('Dados carregados com sucesso!');
+                } catch (err) {
+                    alert('Erro ao carregar o arquivo: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Adicionar eventos de som aos botões
+        const buttons = document.querySelectorAll('.btn-custom, .btn-selected, .save-btn');
+        const hoverSound = document.getElementById('hoverSound');
+        const clickSound = document.getElementById('clickSound');
+
+        buttons.forEach(button => {
+            button.addEventListener('mouseover', () => {
+                hoverSound.currentTime = 0;
+                hoverSound.play();
+            });
+            button.addEventListener('click', () => {
+                clickSound.currentTime = 0;
+                clickSound.play();
+            });
+        });
+
+        // Atualizar preços dinamicamente
+        document.getElementById('productPrice').addEventListener('input', () => {
+            const productName = document.getElementById('productName').value;
+            prices[productName] = parseFloat(document.getElementById('productPrice').value) || 0;
+            calculateTotalValue();
+            monthNames.forEach((monthName, monthIndex) => {
+                const daysInMonth = new Date(document.getElementById('yearInput').value, monthIndex + 1, 0).getDate();
+                for (let day = 1; day <= daysInMonth; day++) {
+                    calculateIngredients(monthName.toLowerCase(), day);
+                }
+            });
+        });
+
+        document.getElementById('productQuantity').addEventListener('input', calculateTotalValue);
+
+        // Inicializar
+        window.onload = function() {
+            generateMonthTabs();
+            generateDayTabs();
+            calculateTotalValue();
+            calculateIngredients('january', 1);
+        };
+    </script>
+</body>
+</html>
