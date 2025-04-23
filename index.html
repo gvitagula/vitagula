@@ -130,7 +130,7 @@
                 <a href="09-HamburgeBrioche/pao-hamburguer-brioche-285g.html" class="btn btn-custom">Pão Hambúrguer Brioche 285g</a>
                 <a href="10-MiniHamburgerBrioche/mini-hamburguer-brioche-220g.html" class="btn btn-custom">Mini Hambúrguer Brioche 220g</a>
                 <a href="11-Forma_Inflcao/pao-briochinho-340g.html" class="btn btn-custom">Pão Briochinho 340g</a>
-                <a href="12-Forma_Integre/pao-de-forma-brioche-330g.html" class="btn btn-custom">Pão de Forma Brioche 330g</a>
+                <a href="12-Forma_Integre/p  ao-de-forma-brioche-330g.html" class="btn btn-custom">Pão de Forma Brioche 330g</a>
                 <a href="13-PaoArabe/pao-arabe.html" class="btn btn-custom">Pão Árabe</a>
                 <a href="14-Champgne200g/champanhe-200g.html" class="btn btn-custom">Champanhe 200g</a>
                 <a href="15-Champgne/champanhe-250g.html" class="btn btn-custom">Champanhe 250g</a>
@@ -147,6 +147,8 @@
             </div>
         </div>
     </div>
+    <audio id="hoverSound" src="aud/sobre_botao.mp3"></audio>
+    <audio id="clickSound" src="aud/click.mp3"></audio>
     <script>
         function updateHeader() {
             const year = document.getElementById('yearSelector').value;
@@ -159,6 +161,22 @@
             localStorage.setItem('selectedYear', year);
             localStorage.setItem('selectedMonth', month);
         }
+
+        // Adicionar eventos de som aos botões
+        const buttons = document.querySelectorAll('.btn-custom, .btn-selected');
+        const hoverSound = document.getElementById('hoverSound');
+        const clickSound = document.getElementById('clickSound');
+
+        buttons.forEach(button => {
+            button.addEventListener('mouseover', () => {
+                hoverSound.currentTime = 0; // Reinicia o som
+                hoverSound.play();
+            });
+            button.addEventListener('click', () => {
+                clickSound.currentTime = 0; // Reinicia o som
+                clickSound.play();
+            });
+        });
 
         // Carregar ano e mês salvos, se existirem
         window.onload = function() {
