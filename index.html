@@ -42,7 +42,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contagem de Produção - Vita Gula</title>
+    <title>Menu Principal - Vita Gula</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
@@ -84,18 +84,36 @@
         .selector-container {
             margin-bottom: 20px;
         }
+        .action-btn {
+            margin: 10px;
+            background-color: #28a745;
+            color: white;
+        }
+        .action-btn:hover {
+            background-color: #218838;
+        }
+        .load-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .load-btn:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>Contagem de Produção - Vita Gula</h1>
+        <h1>Menu Principal - Vita Gula</h1>
         <div class="selector-container">
             <label for="yearSelector">Ano:</label>
             <select id="yearSelector" onchange="updateHeader()">
                 <option value="2025" selected>2025</option>
                 <option value="2026">2026</option>
-                <option value="2027">2027</option>
             </select>
+            <label for="newYearInput">Adicionar Novo Ano:</label>
+            <input type="number" id="newYearInput" min="2025" placeholder="Ex.: 2027">
+            <button class="btn btn-custom" onclick="addNewYear()">Adicionar Ano</button>
+            <br>
             <label for="monthSelector">Mês:</label>
             <select id="monthSelector" onchange="updateHeader()">
                 <option value="1">Janeiro</option>
@@ -117,53 +135,116 @@
     <div class="container text-center">
         <div class="row">
             <div class="col">
-                <h4>Menu</h4>
+                <h4>Menu de Produtos</h4>
                 <a href="index.html" class="btn btn-custom btn-selected">Principal</a><br>
-                <a href="01-Humburguer/pao-hamburguer-450g.html" class="btn btn-custom">Pão Hambúrguer 450g</a>
-                <a href="02-Hotdog/pao-hot-dog-400g.html" class="btn btn-custom">Pão Hot Dog 400g</a>
-                <a href="03-Forma/pao-de-forma-450g.html" class="btn btn-custom">Pão de Forma 450g</a>
-                <a href="04-Leite/pao-de-leite-400g.html" class="btn btn-custom">Pão de Leite 400g</a>
-                <a href="05-Forma_Integral/pao-de-forma-integral-450g.html" class="btn btn-custom">Pão de Forma Integral 450g</a>
-                <a href="06-Hamburgao/hamburgao-650g.html" class="btn btn-custom">Hambúrgão 650g</a>
-                <a href="07-PicNic/pao-pic-nic-450g.html" class="btn btn-custom">Pão Pic Nic 450g</a>
-                <a href="08-PicNicIntegral/pic-nic-integral-450g.html" class="btn btn-custom">Pic Nic Integral 450g</a>
-                <a href="09-HamburgeBrioche/pao-hamburguer-brioche-285g.html" class="btn btn-custom">Pão Hambúrguer Brioche 285g</a>
-                <a href="10-MiniHamburgerBrioche/mini-hamburguer-brioche-220g.html" class="btn btn-custom">Mini Hambúrguer Brioche 220g</a>
-                <a href="11-Forma_Inflcao/pao-briochinho-340g.html" class="btn btn-custom">Pão Briochinho 340g</a>
-                <a href="12-Forma_Integre/p  ao-de-forma-brioche-330g.html" class="btn btn-custom">Pão de Forma Brioche 330g</a>
-                <a href="13-PaoArabe/pao-arabe.html" class="btn btn-custom">Pão Árabe</a>
-                <a href="14-Champgne200g/champanhe-200g.html" class="btn btn-custom">Champanhe 200g</a>
-                <a href="15-Champgne/champanhe-250g.html" class="btn btn-custom">Champanhe 250g</a>
-                <a href="16-Cappuccine/cappuccino-250g.html" class="btn btn-custom">Cappuccino 250g</a>
-                <a href="17-BiscoitoGarje/bola-de-ouro-250g.html" class="btn btn-custom">Bola de Ouro 250g</a>
-                <a href="18-BiscoitoCoco/leite-condensado-coco.html" class="btn btn-custom">Leite Condensado c/ Coco</a>
-                <a href="19-Pizza/pizza-350g.html" class="btn btn-custom">Pizza 350g</a>
-                <a href="20-Bolinho/bolinho-330g.html" class="btn btn-custom">Bolinho 330g</a>
-                <a href="21-BoloFofo/bolo-sabor-fogo-500g.html" class="btn btn-custom">Bolo Sabor Fogo 500g</a>
-                <a href="22-Bolongles/bolo-ingles-360g.html" class="btn btn-custom">Bolo Inglês 360g</a>
-                <a href="23-Prestigio/bolo-prestigio.html" class="btn btn-custom">Bolo Prestígio</a>
-                <a href="24-BoloFotoG/bolo-sabor-fofog.html" class="btn btn-custom">Bolo Sabor Fofog</a>
-                <a href="25-BoloMole/bolo-mole.html" class="btn btn-custom">Bolo Mole</a>
+                <a href="01-Humburguer/pao-hamburguer-450g.html" class="btn btn-custom">Hambúrguer</a>
+                <a href="02-Hotdog/pao-hot-dog-400g.html" class="btn btn-custom">HotDog</a>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <h4>Gerenciamento de Dados</h4>
+                <button class="btn action-btn" onclick="saveData()">Salvar Dados</button>
+                <button class="btn load-btn" onclick="document.getElementById('fileInput').click()">Carregar Dados</button>
+                <input type="file" id="fileInput" style="display: none;" accept=".json,application/json" onchange="loadData(event)">
+                <p><small>Nota: Para carregar arquivos Excel, converta-os para JSON primeiro.</small></p>
             </div>
         </div>
     </div>
     <audio id="hoverSound" src="aud/sobre_botao.mp3"></audio>
     <audio id="clickSound" src="aud/click.mp3"></audio>
     <script>
+        const monthNames = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ];
+
         function updateHeader() {
             const year = document.getElementById('yearSelector').value;
             const month = document.getElementById('monthSelector').value;
-            const monthNames = [
-                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-            ];
             document.getElementById('periodHeader').textContent = `${monthNames[month - 1]} ${year}`;
             localStorage.setItem('selectedYear', year);
             localStorage.setItem('selectedMonth', month);
         }
 
+        function addNewYear() {
+            const newYearInput = document.getElementById('newYearInput');
+            const newYear = newYearInput.value;
+            if (newYear && newYear >= 2025) {
+                const yearSelector = document.getElementById('yearSelector');
+                const existingOption = Array.from(yearSelector.options).find(opt => opt.value === newYear);
+                if (!existingOption) {
+                    const option = document.createElement('option');
+                    option.value = newYear;
+                    option.text = newYear;
+                    yearSelector.appendChild(option);
+                    yearSelector.value = newYear;
+                    updateHeader();
+                    newYearInput.value = '';
+                } else {
+                    alert('Este ano já está na lista!');
+                }
+            } else {
+                alert('Por favor, insira um ano válido (a partir de 2025).');
+            }
+        }
+
+        function saveData() {
+            const products = ['pao-hamburguer-450g', 'pao-hot-dog-400g'];
+            const data = {};
+            products.forEach(product => {
+                data[product] = {};
+                for (let year = 2025; year <= 2030; year++) {
+                    for (let month = 1; month <= 12; month++) {
+                        const key = `${product}_${year}_${month}`;
+                        const savedData = localStorage.getItem(key);
+                        if (savedData) {
+                            if (!data[product][year]) data[product][year] = {};
+                            data[product][year][month] = JSON.parse(savedData);
+                        }
+                    }
+                }
+            });
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'vita-gula-dados.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('Dados salvos com sucesso!');
+        }
+
+        function loadData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    Object.keys(data).forEach(product => {
+                        Object.keys(data[product]).forEach(year => {
+                            Object.keys(data[product][year]).forEach(month => {
+                                const key = `${product}_${year}_${month}`;
+                                localStorage.setItem(key, JSON.stringify(data[product][year][month]));
+                            });
+                        });
+                    });
+                    alert('Dados carregados com sucesso!');
+                } catch (err) {
+                    alert('Erro ao carregar o arquivo: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
         // Adicionar eventos de som aos botões
-        const buttons = document.querySelectorAll('.btn-custom, .btn-selected');
+        const buttons = document.querySelectorAll('.btn-custom, .btn-selected, .action-btn, .load-btn');
         const hoverSound = document.getElementById('hoverSound');
         const clickSound = document.getElementById('clickSound');
 
@@ -182,7 +263,15 @@
         window.onload = function() {
             const savedYear = localStorage.getItem('selectedYear') || '2025';
             const savedMonth = localStorage.getItem('selectedMonth') || '3';
-            document.getElementById('yearSelector').value = savedYear;
+            const yearSelector = document.getElementById('yearSelector');
+            const existingOption = Array.from(yearSelector.options).find(opt => opt.value === savedYear);
+            if (!existingOption && savedYear >= 2025) {
+                const option = document.createElement('option');
+                option.value = savedYear;
+                option.text = savedYear;
+                yearSelector.appendChild(option);
+            }
+            yearSelector.value = savedYear;
             document.getElementById('monthSelector').value = savedMonth;
             updateHeader();
         };
